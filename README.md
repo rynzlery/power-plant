@@ -8,7 +8,7 @@ Power-Plant is a project on my indoor plant, a Lemon balm. Months ago, I wanted 
 * sensors (humidity)
 
 ## Schematic
-![fritzing schematic](https://lh5.googleusercontent.com/pHcfBInWBY1ij5KjQsvQRAW8MgKYr1BgZCNilHi0uAwroPQTcxmuXp14XESVK1TtAjr-V_mmSOjiGUPekQUFNA=w1366-h662-rw)
+![fritzing schematic](http://netwire.ddns.net/images/tutos/fritzing.PNG)
 
 ## Install
 1) Create a `env.py` file with the following variables :
