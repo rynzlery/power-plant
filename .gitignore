@@ -1,0 +1,5 @@
+
+src/core/env.py
+other/
+src/core/.idea
+src/core/__pycache__
