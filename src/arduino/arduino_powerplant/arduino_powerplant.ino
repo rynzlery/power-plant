@@ -1,3 +1,9 @@
+// Date and time functions using a DS3231 RTC connected via I2C and Wire lib
+#include <Wire.h>
+#include "RTClib.h"
+
+RTC_DS3231 rtc;
+
 int humidityPin = A0;
 int tempPin = A1;
 // alimentation du capteur d'humidité
@@ -7,9 +13,10 @@ int powerPin = 7;
 int sensorValue = 0;
 
 const int NB_MESURES = 40;
-const int LOOP_TIME = 30000;
-const int ARROSAGE_TIME = 5000;
+const int LOOP_TIME = 30000;      // toutes les 30 sec
+const int ARROSAGE_TIME = 5000;   // on arrose 5 sec
 const int HUMIDITY_THRESHOLD = 700;
+const int WATER_HOUR = 19;
 
 const byte PWMA = 3;  // PWM control (speed) for pump
 const byte DIRA = 12; // Direction control for pump
@@ -26,6 +33,20 @@ void setup() {
 
   // amélioration de la précision de mesure
   analogReference(INTERNAL);
+
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+
+  if (rtc.lostPower()) {
+    Serial.println("RTC lost power, lets set the time!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+  }
 }
 
 void loop() {
@@ -39,7 +60,9 @@ void loop() {
   digitalWrite(powerPin, LOW);
   sensorValue/=NB_MESURES;
 
-  if(sensorValue < HUMIDITY_THRESHOLD)
+  DateTime now = rtc.now();
+  // si c'est l'heure d'arroser et que l'humidité est faible
+  if(now.hour() == WATER_HOUR && now.minute() == 00 && sensorValue < HUMIDITY_THRESHOLD)
   {
     StartArrosage();
   } else {
